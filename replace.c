@@ -16,18 +16,15 @@
 #include "text.h"
 
 // Creates a struct representing a changed file. Must be freed after.
-ChangedFile* createChangedFile(char *filename, int changes) {
-    // Allocate memory for the filename pointer and elements in struct
-    ChangedFile *changedFile = malloc(sizeof(ChangedFile));
-    // Must allocate memory for contents of pointers.  Here, strdup()
-    // creates a new copy of name (str pointed by *filename).  Another option:
-    // changedFile->filename = malloc(strlen(name)+1);
-    // strcpy(changedFile->filename, filename);
-    changedFile->filename = strdup(filename);
-    changedFile->changes = changes;
+ChangedFile createChangedFile(char *filename, int changes) {
+    ChangedFile changedFile = {strdup(filename), changes};
     return changedFile;
 }
 
+// Comparator function to sort change files based on changes count
+int cmpfunc (const void * a, const void * b) {
+    return ( (*(ChangedFile*)a).changes - (*(ChangedFile*)b).changes );
+}
 
 int main(int argc, char *argv[]) {
     printf("\n");
@@ -45,12 +42,16 @@ int main(int argc, char *argv[]) {
         perror("Error getting current working directory.");
         return 1; 
     }
-    // First argument of argv is the execution's first argument.
-    printf("The current directory is: %s.\n", argv[0]);
     printf("The input string is: %s (length: %lu).", argv[1], strlen(argv[1]));
 
-    printf("\n\nPrinting all files:\n");
+    printf("\n\nPrinting all files:");
+    // List to append all changed files to
+    initFilesList(&changedFilesList, 10);
+    // Recursively find all txt files and perform search and replace
     findFiles(argv[1], cwd);
+    // Sort list of files for highest changes first
+    //qsort(&changedFilesList, changedFilesList.used, sizeof(ChangedFile), cmpfunc);
+
 
     // Test array
     // Array arr; 
@@ -64,6 +65,9 @@ int main(int argc, char *argv[]) {
     // freeArray(&arr);
 
     // TODO: Clean allocated memory (structs, vars, anything malloc'd).
+    printf("\n");
+    printFilesList(&changedFilesList);
+    freeFilesList(&changedFilesList);
     printf("\n[END]\n");
     return 0;
 }
@@ -89,8 +93,9 @@ void freeFilesList(FilesList *a) {
   a->used = a->size = 0;
 }
 void printFilesList(FilesList *a) {
-    printf("[Printing files list]:\n");
+    printf("[Printing changed files]:\n");
     for (int i = 0; i < a->used; i++) {
-        printf("%s", a->array[i].filename);
+        printf("   %i. %s ", i, a->array[i].filename);
+        printf("\n");
     }
 }

@@ -5,6 +5,7 @@
 #include <ctype.h>
 
 #include "text.h"
+#include "replace.h"
 
 // Opens a file and finds and replaces the substring
 int findAndReplace(char *path, char *targetWord){
@@ -104,10 +105,12 @@ int findAndReplace(char *path, char *targetWord){
     freeArray(&buffer);
     printf("\nTotal changes: %d.", changesCount);
     printf("\nTotal occurence: %d.", totalCount);
+    if (changesCount > 0) {
+        ChangedFile newFile = createChangedFile(path, changesCount);
+        insertFilesList(&changedFilesList, newFile);
+    }
     return 0;
 }
-
-
 
 // Functions for the Array struct below
 
@@ -131,17 +134,7 @@ void freeArray(Array *a) {
 }
 void printArray(Array *a) {
     printf("[Printing array]:\n");
-    for (int i = 0; i < a->used; i++) {
+for (int i = 0; i < a->used; i++) {
         printf("%c", a->array[i]);
     }
-}
-char* getStrFromArray(Array *a) {
-    char s[a->used+1];
-    int i;
-    for (i = 0; i < a->used; i++) {
-        s[i] = a->array[i];
-    }
-    s[i] = '\0';
-    //printf("LASTCHAR: %c",s[2]);
-    return s;
 }
