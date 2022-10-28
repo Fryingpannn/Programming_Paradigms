@@ -13,6 +13,7 @@
 
 #include "replace.h"
 #include "traversal.h"
+#include "text.h"
 
 // Creates a struct representing a changed file. Must be freed after.
 ChangedFile* createChangedFile(char *filename, int changes) {
@@ -48,10 +49,48 @@ int main(int argc, char *argv[]) {
     printf("The current directory is: %s.\n", argv[0]);
     printf("The input string is: %s (length: %lu).", argv[1], strlen(argv[1]));
 
-    printf("\n\nPrinting files:\n");
-    listFilesRecursively(cwd);
+    printf("\n\nPrinting all files:\n");
+    findFiles(argv[1], cwd);
 
-    // TODO: Clean allocated memory (structs, vars).
+    // Test array
+    // Array arr; 
+    // initArray(&arr, 20);
+    // insertArray(&arr, 'h');
+    // insertArray(&arr, 'e');
+    // insertArray(&arr, 'l');
+    // insertArray(&arr, 'l');
+    // insertArray(&arr, 'o');
+    // printArray(&arr);
+    // freeArray(&arr);
+
+    // TODO: Clean allocated memory (structs, vars, anything malloc'd).
     printf("\n[END]\n");
     return 0;
+}
+
+// Functions for the FilesList struct below
+
+void initFilesList(FilesList *a, size_t initialSize) {
+    a->array = malloc(initialSize * sizeof(FilesList));
+    a->used = 0;
+    a->size = initialSize;
+}
+void insertFilesList(FilesList *a, ChangedFile element) {
+  // 'used' increments after being put, so use equality here
+  if (a->used == a->size) {
+    a->size *= 2;
+    a->array = realloc(a->array, a->size * sizeof(FilesList));
+  }
+  a->array[a->used++] = element;
+}
+void freeFilesList(FilesList *a) {
+  free(a->array);
+  a->array = NULL;
+  a->used = a->size = 0;
+}
+void printFilesList(FilesList *a) {
+    printf("[Printing files list]:\n");
+    for (int i = 0; i < a->used; i++) {
+        printf("%s", a->array[i].filename);
+    }
 }

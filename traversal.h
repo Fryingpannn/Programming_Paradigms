@@ -1,2 +1,1 @@
-void findFiles(char *targetWord, char *currDirectory);
-extern void listFilesRecursively(char *basePath);
+void findFiles(char *targetWord, char *basePath);
