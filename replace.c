@@ -23,7 +23,7 @@ ChangedFile createChangedFile(char *filename, int changes) {
 
 // Comparator function to sort change files based on changes count
 int cmpfunc (const void * a, const void * b) {
-    return ( (*(ChangedFile*)a).changes - (*(ChangedFile*)b).changes );
+    return ( (*(ChangedFile*)b).changes - (*(ChangedFile*)a).changes);
 }
 
 int main(int argc, char *argv[]) {
@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
     // Recursively find all txt files and perform search and replace
     findFiles(argv[1], cwd);
     // Sort list of files for highest changes first
-    //qsort(&changedFilesList, changedFilesList.used, sizeof(ChangedFile), cmpfunc);
+    qsort(changedFilesList.array, changedFilesList.used, sizeof(ChangedFile), cmpfunc);
 
 
     // Test array
@@ -95,7 +95,7 @@ void freeFilesList(FilesList *a) {
 void printFilesList(FilesList *a) {
     printf("[Printing changed files]:\n");
     for (int i = 0; i < a->used; i++) {
-        printf("   %i. %s ", i, a->array[i].filename);
+        printf("   %i: %s ", a->array[i].changes, a->array[i].filename);
         printf("\n");
     }
 }
