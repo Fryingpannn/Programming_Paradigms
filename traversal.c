@@ -36,7 +36,6 @@ int isDirectory(const char *path)
 void findFiles(char *targetWord, char *basePath)
 {
     char path[PATH_MAX];
-    char relative_path[PATH_MAX];
     struct dirent *dp;
     DIR *dir = opendir(basePath);
 
@@ -55,15 +54,14 @@ void findFiles(char *targetWord, char *basePath)
             strcat(path, dp->d_name);
 
             // Open text only if text file
-            //printf("This file: %i", isTxt(dp->d_name));
             if (isTxt(dp->d_name)){
-                printf("\n========");
-                printf("\nFilename: %s\n", dp->d_name);
+                // Uncomment for debugging
+                //printf("\n========");
+                //printf("\nFilename: %s\n", dp->d_name);
                 findAndReplace(path, targetWord);
             }
 
             // Recurse only if it's a directory
-            //printf("This file: %i", isTxt(dp->d_name));
             if (isDirectory(path)) {
                 findFiles(targetWord, path);
             }
@@ -72,12 +70,3 @@ void findFiles(char *targetWord, char *basePath)
 
     closedir(dir);
 }
-
-/**
- * 
- * Test Files:
- * 1 - 6 apple, 6 changes
- * 2 - 4 apple, 4 changes
- * 3 - 2 apple, 2 changes
- * 4 - 1 apple, 1 changes
-*/

@@ -32,7 +32,8 @@ int findAndReplace(char *path, char *targetWord){
     }
     fclose(fp);
 
-    // Search and replace: 2 pointers
+    // Find and replace substring then replace text in original file
+    // Use 2 pointers approach: modify buffer
     int changesCount = 0;
     int totalCount = 0;
     int i = 0;
@@ -49,20 +50,14 @@ int findAndReplace(char *path, char *targetWord){
             int temp = i;
             int intervalMax = temp + strlen(targetWord);
             for (k = 0; k <= strlen(targetWord); k++) {
-                //printf("\nCurrent buffer[i]: %c", buffer.array[i]);
-                //printf("\nCurrent targetWord[k]: %c", targetWord[k]);
-
-                // If target word letter matches
-                //printf("\nMatch: Current targetWord[k]: %c", targetWord[k]);
+                // If target word letter matches | Debugging: printf("\nMatch: Current targetWord[k]: %c", targetWord[k]);
                 // Full word match: replace
                 if (k == strlen(targetWord)) {
-                    //printf("\nFound equal");
-                    //printf("\nInterval Max: %i", intervalMax);
+                    // Modify buffer to upper case | Debugging: //printf("\nFound equal"); //printf("\nInterval Max: %i", intervalMax);
                     while (temp < intervalMax) {
-                        //printf("-temp: %i-", temp);
                         buffer.array[temp] = toupper(buffer.array[temp]);
-                        //printf("[%c]", buffer.array[temp]);
                         temp++;
+                        // To debug: printf("-temp: %i-", temp); // printf("[%c]", buffer.array[temp]);
                     }
                     k = 0;
                     if (changeNeeded == 1) {
@@ -91,11 +86,7 @@ int findAndReplace(char *path, char *targetWord){
         }
     }
 
-    // Find and replace substring then replace text in original file
-    printArray(&buffer);
-
     fp = fopen(path, "w");
-    //fp = fopen("./test-write-pan.txt", "w");
     int result = fputs(buffer.array, fp);
     if (result == EOF) {
         printf("Failed to write to file %s\n", path);
@@ -103,8 +94,9 @@ int findAndReplace(char *path, char *targetWord){
     fclose(fp);
 
     freeArray(&buffer);
-    printf("\nTotal changes: %d.", changesCount);
-    printf("\nTotal occurence: %d.", totalCount);
+    // Uncomment for debugging
+    //printf("\nTotal changes: %d.", changesCount);
+    //printf("\nTotal occurence: %d.", totalCount);
     if (changesCount > 0) {
         ChangedFile newFile = createChangedFile(path, changesCount);
         insertFilesList(&changedFilesList, newFile);

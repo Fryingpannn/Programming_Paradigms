@@ -1,9 +1,9 @@
 /**
+ * Matthew Pan 40135588
+ * 
  * Starting point of the program.
  * Takes in one command line string and searches for this string in other files under the current directory, and converts them to upper case. 
 **/
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,6 +14,7 @@
 #include "replace.h"
 #include "traversal.h"
 #include "text.h"
+#include "report.h"
 
 // Creates a struct representing a changed file. Must be freed after.
 ChangedFile createChangedFile(char *filename, int changes) {
@@ -21,54 +22,33 @@ ChangedFile createChangedFile(char *filename, int changes) {
     return changedFile;
 }
 
-// Comparator function to sort change files based on changes count
-int cmpfunc (const void * a, const void * b) {
-    return ( (*(ChangedFile*)b).changes - (*(ChangedFile*)a).changes);
-}
-
 int main(int argc, char *argv[]) {
-    printf("\n");
     // Stop program if user did not input anything
     if (argc != 2) {
         printf("Please input a single string to the program.\n");
         return 0;
     }
+    printf("\n===========Pan's Word Replacer===========\n");
+    printf("The target string is: %s (length: %lu).", argv[1], strlen(argv[1]));
 
-    // TODO: full path vs relative
+    // Get path of current working directory
     char cwd[PATH_MAX];
     if (getcwd(cwd, sizeof(cwd)) != NULL) {
-        printf("Current working dir: %s (length: %lu).\n", cwd, strlen(cwd));
+        printf("\nSearch begins in current working directory: %s (length: %lu).\n", cwd, strlen(cwd));
     } else { 
         perror("Error getting current working directory.");
         return 1; 
     }
-    printf("The input string is: %s (length: %lu).", argv[1], strlen(argv[1]));
 
-    printf("\n\nPrinting all files:");
+    printf("\n** Search Report **\n");
     // List to append all changed files to
     initFilesList(&changedFilesList, 10);
     // Recursively find all txt files and perform search and replace
     findFiles(argv[1], cwd);
-    // Sort list of files for highest changes first
-    qsort(changedFilesList.array, changedFilesList.used, sizeof(ChangedFile), cmpfunc);
 
-
-    // Test array
-    // Array arr; 
-    // initArray(&arr, 20);
-    // insertArray(&arr, 'h');
-    // insertArray(&arr, 'e');
-    // insertArray(&arr, 'l');
-    // insertArray(&arr, 'l');
-    // insertArray(&arr, 'o');
-    // printArray(&arr);
-    // freeArray(&arr);
-
-    // TODO: Clean allocated memory (structs, vars, anything malloc'd).
-    printf("\n");
-    printFilesList(&changedFilesList);
+    printReport();
     freeFilesList(&changedFilesList);
-    printf("\n[END]\n");
+    printf("\n\n==================[END]==================\n\n");
     return 0;
 }
 
@@ -95,7 +75,7 @@ void freeFilesList(FilesList *a) {
 void printFilesList(FilesList *a) {
     printf("[Printing changed files]:\n");
     for (int i = 0; i < a->used; i++) {
-        printf("   %i: %s ", a->array[i].changes, a->array[i].filename);
+        printf("   %i changes: %s ", a->array[i].changes, a->array[i].filename);
         printf("\n");
     }
 }
